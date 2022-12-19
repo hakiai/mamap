@@ -8,6 +8,7 @@
 
     <ion-content :fullscreen="true">
       <GoogleMap
+        v-if="!isLoading"
         ref="mapRef"
         :api-key="apiKey"
         style="width: 100%; height: 100%;"
@@ -19,6 +20,10 @@
           :key="`place-${i}`"
           :options="{
             position: { lat: Number(place.lat), lng: Number(place.lng) },
+            icon: {
+              url: `assets/icon/icon_${place.icon_type}.png`,
+              scaledSize: { width: 50, height: 50 }
+            },
           }"
           @click="selectPlace(i)"
         >
@@ -35,6 +40,9 @@
           </InfoWindow>
         </Marker>
       </GoogleMap>
+      <PageLoading
+        v-else
+      />
     </ion-content>
   </ion-page>
 </template>
@@ -51,6 +59,8 @@ import { defineComponent } from "vue";
 import axios from "axios";
 import { GoogleMap, Marker, InfoWindow } from "vue3-google-map";
 
+import PageLoading from '../components/PageLoading.vue'
+
 export default defineComponent({
   name: "HomePage",
   components: {
@@ -62,14 +72,17 @@ export default defineComponent({
     GoogleMap,
     Marker,
     InfoWindow,
+    PageLoading,
   },
   data(): {
+    isLoading: boolean;
     places: object[];
     apiKey: string;
     center: object;
     selectedPlace: number | null;
   } {
     return {
+      isLoading: false,
       places: [],
       apiKey: "AIzaSyDWjoJaz1ds_RHcWMeu1jIUXxeaLQS7cdU",
       center: {
@@ -80,6 +93,7 @@ export default defineComponent({
     };
   },
   created() {
+    this.isLoading = true
     axios
       .get(
         "https://script.google.com/macros/s/AKfycbyGydBlxUX0yN0qe7U97VcJq7Kuu8iSDlvWhtHs_w4zAE8ZF2QhMRJzBOpsShS9NABT7Q/exec"
@@ -100,11 +114,23 @@ export default defineComponent({
             'orangered',
             'darkgreen'
           ]
-
           obj.type_color = typeColors[Number(obj.type_no) - 1]
+
+          // アイコン種類を格納
+          const iconTypes = [
+            'restaurant',
+            'child',
+            'lesson',
+            'hoby',
+            'sightseeing',
+          ]
+          obj.icon_type = iconTypes[Number(obj.type_no) - 1]
+
+          console.log(obj)
           return obj
         })
         console.log(this.places);
+        this.isLoading = false
       });
   },
   methods: {
@@ -146,4 +172,5 @@ export default defineComponent({
   font-size: .8em;
   margin: .3rem 0;
 }
+
 </style>
