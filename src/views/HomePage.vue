@@ -84,7 +84,7 @@ export default defineComponent({
     return {
       isLoading: false,
       places: [],
-      apiKey: "AIzaSyDWjoJaz1ds_RHcWMeu1jIUXxeaLQS7cdU",
+      apiKey: "AIzaSyDw9IUIdkHXqPBbCbFF9DuzfP_MGJ2WUWY",
       center: {
         lat: 33.076404,
         lng: 131.861819,
